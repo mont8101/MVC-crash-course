@@ -1,0 +1,13 @@
+﻿@model MVC_crash_course.Models.Item
+@{
+    var message = "hello world";
+    var items = new List<string> { "Item1", "Item2", "Item3" }; 
+}
+
+<p>This is the name of the item @Model.Name</p>
+<ul>
+@foreach(var item in items)
+{
+    <li>@item</li>
+}
+</ul>
