@@ -1,19 +1,75 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MVC_crash_course.Data;
 using MVC_crash_course.Models;
+using System.ComponentModel;
 
 namespace MVC_crash_course.Controllers
 {
     public class ItemsController : Controller
     {
-        public IActionResult Overview()
+        private readonly MVCContext _context;
+        public ItemsController(MVCContext context) { 
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
         {
-            var item = new Item() { Name = "keyboard" };
+            var item = await _context.Items.Include(s=> s.SerialNumber).ToListAsync();
             return View(item);
         }
 
-        public IActionResult Edit(int id)
+        public IActionResult Create()
         {
-            return Content("id=" + id);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("Id, Name, Price")] Item item)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Items.Add(item);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(item);
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var item = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+            return View(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Price")] Item item)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Update(item);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(item);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var item = await _context.Items.FirstOrDefaultAsync(x => x.Id == id);
+            return View(item);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var item = await (_context.Items.FindAsync(id));
+            if(item != null)
+            {
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
         }
     }
 }
