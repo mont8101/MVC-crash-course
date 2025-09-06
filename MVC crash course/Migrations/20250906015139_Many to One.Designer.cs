@@ -2,6 +2,7 @@
 using MVC_crash_course.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MVC_crash_course.Migrations
 {
     [DbContext(typeof(MVCContext))]
-    partial class MVCContextModelSnapshot : ModelSnapshot
+    [Migration("20250906015139_Many to One")]
+    partial class ManytoOne
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,23 +58,6 @@ namespace MVC_crash_course.Migrations
                         });
                 });
 
-            modelBuilder.Entity("MVC_crash_course.Models.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Clients");
-                });
-
             modelBuilder.Entity("MVC_crash_course.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -107,21 +93,6 @@ namespace MVC_crash_course.Migrations
                             Price = 1500.0,
                             SerialNumberId = 10
                         });
-                });
-
-            modelBuilder.Entity("MVC_crash_course.Models.ItemClient", b =>
-                {
-                    b.Property<int>("ItemId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ItemId", "ClientId");
-
-                    b.HasIndex("ClientId");
-
-                    b.ToTable("ItemsClients");
                 });
 
             modelBuilder.Entity("MVC_crash_course.Models.SerialNumber", b =>
@@ -164,25 +135,6 @@ namespace MVC_crash_course.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("MVC_crash_course.Models.ItemClient", b =>
-                {
-                    b.HasOne("MVC_crash_course.Models.Client", "Client")
-                        .WithMany("ItemClients")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MVC_crash_course.Models.Item", "Item")
-                        .WithMany("ItemClients")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Item");
-                });
-
             modelBuilder.Entity("MVC_crash_course.Models.SerialNumber", b =>
                 {
                     b.HasOne("MVC_crash_course.Models.Item", "Item")
@@ -197,15 +149,8 @@ namespace MVC_crash_course.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("MVC_crash_course.Models.Client", b =>
-                {
-                    b.Navigation("ItemClients");
-                });
-
             modelBuilder.Entity("MVC_crash_course.Models.Item", b =>
                 {
-                    b.Navigation("ItemClients");
-
                     b.Navigation("SerialNumber");
                 });
 #pragma warning restore 612, 618
